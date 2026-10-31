@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LIFE OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F1F4EC;--panel:#FBFCF8;--ink:#13261F;--muted:#5F6E63;--line:#D8DFCF;--c:#3FA566;--display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;--body:"Figtree","Segoe UI",system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);background:var(--paper);color:var(--ink);line-height:1.5}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:3px solid var(--c);outline-offset:2px}
+.container{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{background:var(--ink);color:#fff;padding:1.75rem 1.1rem;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:1.25rem}
+.logo{font:800 1.5rem var(--display);letter-spacing:-.02em}.logo span{color:#7BD39A}
+nav{display:flex;flex-direction:column;gap:.15rem}
+nav a{display:flex;align-items:center;gap:.7rem;color:#B9C7BE;text-decoration:none;padding:.5rem .75rem;border-radius:10px;font-weight:500;transition:background .2s,color .2s}
+nav a::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--d);transition:transform .25s}
+nav a:hover{background:rgba(255,255,255,.07);color:#fff}nav a:hover::before{transform:scale(1.5)}
+nav a.active{background:#fff;color:var(--ink)}
+.me{margin-top:auto;background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:center;font-size:.85rem;color:#9FB0A5}
+.me b{display:block;font:700 1.15rem var(--display);color:#fff}
+.xpbar{height:6px;background:rgba(255,255,255,.12);border-radius:9px;margin:.6rem 0 .3rem;overflow:hidden}
+.xpbar i{display:block;height:100%;width:0;background:#7BD39A;border-radius:9px;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+
+.main{padding:2.25rem clamp(1rem,4vw,3rem) 4rem;max-width:1100px;width:100%}
+#view{display:flex;flex-direction:column;gap:1.5rem}
+.enter>*{animation:rise .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i)*70ms)}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}}
+.vh h1{font:800 clamp(1.8rem,4vw,2.5rem) var(--display);letter-spacing:-.03em;line-height:1.1}.vh p{color:var(--muted);margin-top:.3rem}
+.hero{background:var(--ink);color:#fff;border-radius:22px;padding:clamp(1.5rem,4vw,2.5rem)}
+.hero h2{font:800 clamp(1.9rem,4.5vw,3.2rem)/1.05 var(--display);letter-spacing:-.03em}
+.hero p{color:#B9C7BE;margin-top:.7rem}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1.25rem}
+.stat{border-left:3px solid var(--c);padding:.1rem 0 .1rem .8rem}
+.stat b{display:block;font:800 1.8rem var(--display);letter-spacing:-.03em;line-height:1.15}.stat span{color:var(--muted);font-size:.85rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem}.wide{grid-column:1/-1}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.4rem;display:flex;flex-direction:column;gap:1rem}
+.ch{display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
+.ch h3{font:700 1.15rem var(--display)}.ch small,.muted,.empty{color:var(--muted);font-size:.9rem}
+.tile{display:flex;flex-direction:column;gap:.15rem;text-decoration:none;color:inherit;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:6px 6px 16px 16px;padding:1rem 1.1rem;transition:transform .2s,box-shadow .2s}
+.tile:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(19,38,31,.1)}
+.tile small{color:var(--muted)}.tile b{font:800 1.5rem var(--display);letter-spacing:-.02em}.tile span{font-size:.85rem;color:var(--muted)}
+.tiles{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.tip{background:color-mix(in srgb,var(--c) 14%,transparent);border-radius:10px;padding:.7rem 1rem}
+
+ul{list-style:none}
+li{display:flex;align-items:center;gap:.7rem;padding:.65rem 0;border-bottom:1px solid var(--line);flex-wrap:wrap}li:last-child{border:0}
+.grow{flex:1;min-width:120px}.done{color:var(--muted);text-decoration:line-through}
+.add{display:flex;gap:.5rem;flex-wrap:wrap}
+.add input,.add select{flex:1;min-width:110px;padding:.55rem .75rem;border:1px solid var(--line);border-radius:8px;background:#fff}
+.btn{background:var(--ink);color:#fff;border:0;border-radius:8px;padding:.55rem 1rem;font-weight:600;transition:background .2s}.btn:hover{background:var(--c)}
+.ghost{background:none;border:1px solid var(--line);border-radius:8px;padding:.3rem .7rem;font-weight:600;transition:background .2s,border-color .2s}.ghost:hover{background:color-mix(in srgb,var(--c) 14%,transparent);border-color:var(--c)}
+.x{background:none;border:0;color:var(--muted);font-size:1.25rem;line-height:1;padding:.2rem .4rem;border-radius:6px}.x:hover{color:#B4432F;background:#F6DDD5}
+.chip{font-size:.75rem;font-weight:600;padding:.1rem .6rem;border-radius:99px;background:color-mix(in srgb,var(--c) 16%,transparent)}
+.chip.bad{background:#F6DDD5;color:#8B3A20}.chip.ok{background:#D9EFDF;color:#1F6B3B}
+.tick{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:#fff;display:grid;place-items:center;color:#fff;font-weight:700;transition:background .2s,border-color .2s}
+.tick.on{background:var(--c);border-color:var(--c);animation:pop .4s}@keyframes pop{50%{transform:scale(1.3)}}
+.dots{display:flex;gap:4px}.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}.dots i.on{background:var(--c)}
+.bar{height:8px;border-radius:9px;overflow:hidden;background:color-mix(in srgb,var(--c) 18%,transparent);flex-basis:100%}
+.bar i{display:block;height:100%;width:var(--w);background:var(--c);border-radius:9px;transform-origin:left}
+.enter .bar i{animation:grow .9s .25s cubic-bezier(.2,.8,.2,1) both}
+@keyframes grow{from{transform:scaleX(0)}}@keyframes growY{from{transform:scaleY(0)}}
+.cols{display:flex;gap:.6rem;height:160px}
+.col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:.3rem;font-size:.75rem;color:var(--muted)}
+.col i{width:100%;height:calc((100% - 2.6rem)*var(--k));min-height:3px;background:var(--c);border-radius:6px 6px 2px 2px;transform-origin:bottom}
+.enter .col i{animation:growY .8s .25s cubic-bezier(.2,.8,.2,1) both}
+.cat{display:flex;flex-direction:column;gap:.35rem}.row{display:flex;justify-content:space-between;gap:1rem}
+.in{color:#1F8A4C;font-weight:600}.out{color:#B4432F;font-weight:600}
+.glasses{display:flex;gap:.4rem;flex-wrap:wrap}
+.glass{width:2.4rem;height:2.9rem;border:2px solid var(--line);border-radius:6px 6px 12px 12px;background:#fff;transition:background .25s,border-color .25s,transform .15s}
+.glass:hover{transform:translateY(-3px)}.glass.on{background:color-mix(in srgb,var(--c) 30%,#fff);border-color:var(--c)}
+.stepper{display:flex;align-items:center;gap:.75rem}.stepper b{font:700 1.3rem var(--display);min-width:4.5ch;text-align:center}
+#toast{position:fixed;right:1.25rem;bottom:1.25rem;display:flex;flex-direction:column;gap:.5rem;z-index:9}
+#toast div{background:var(--ink);color:#fff;padding:.6rem 1rem;border-radius:10px;font-weight:600;animation:toast 2.4s both}
+@keyframes toast{0%{opacity:0;transform:translateY(14px)}12%,80%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-8px)}}
+.hero .bar{height:12px;margin-top:.6rem;background:rgba(255,255,255,.14)}.hero .bar i{background:#7BD39A}
+.hero .lbl{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:1.5rem;font-size:.85rem;color:#B9C7BE}
+#splash{position:fixed;inset:0;z-index:20;background:var(--ink);color:#fff;display:grid;place-items:center;padding:2rem;text-align:center;transition:opacity .6s,visibility .6s}
+#splash.off{opacity:0;visibility:hidden}
+#splash p{font:800 clamp(1.8rem,5vw,3.2rem)/1.1 var(--display);letter-spacing:-.03em;max-width:20ch;margin:0 auto 2rem;animation:rise .9s cubic-bezier(.2,.8,.2,1) both}
+#splash button{background:#7BD39A;color:var(--ink);border:0;border-radius:99px;padding:.7rem 1.6rem;font-weight:700;animation:rise .9s .4s cubic-bezier(.2,.8,.2,1) both}
+@media (max-width:800px){.container{grid-template-columns:1fr}.sidebar{position:static;height:auto;padding:1rem;gap:.75rem}nav{flex-direction:row;flex-wrap:wrap;gap:.4rem}nav a{padding:.45rem .8rem;background:rgba(255,255,255,.07)}nav a.active{background:#fff}.me{display:none}}
+@media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="container">
+  <aside class="sidebar">
+    <h2 class="logo">LIFE OS<span>.</span></h2>
+    <nav aria-label="Menu principal" id="nav"></nav>
+    <div class="me">
+      <b id="lv"></b>
+      <div class="xpbar"><i id="xpb"></i></div>
+      <span><span id="xpn">0</span> XP</span>
+    </div>
+  </aside>
+  <main class="main"><div id="view"></div></main>
+</div>
+<div id="splash" role="dialog" aria-label="Frase do dia"><div><p id="phrase"></p><button id="go" type="button">Começar o dia</button></div></div>
+<div id="toast" aria-live="polite"></div>
+
+<script>
+const KEY='lifeos-v2',T0=Date.now();
+const dk=o=>new Date(T0-o*864e5).toLocaleDateString('sv-SE'),T=dk(0),days=n=>[...Array(n)].map((_,i)=>dk(n-1-i));
+const brl=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
+const sum=a=>a.reduce((x,y)=>x+y,0),fmt=n=>String(Math.round(n*10)/10).replace('.',',');
+const diff=d=>Math.round((new Date(d+'T12:00')-new Date(T+'T12:00'))/864e5);
+const dueTxt=d=>{const n=diff(d);return n<0?'atrasado '+(-n)+' d':n?'em '+n+' d':'vence hoje'};
+const $=s=>document.querySelector(s);
+function h(t,a={},...k){const e=document.createElement(t);for(const x in a){const v=a[x];if(x.startsWith('on'))e.addEventListener(x.slice(2),v);else if(x==='class')e.className=v;else e.setAttribute(x,v)}e.append(...k);return e}
+
+const PH=['Um passo pequeno hoje vale mais que um plano perfeito amanhã.','Constância transforma esforço comum em resultado extraordinário.','Você não precisa fazer tudo hoje. Só precisa dar o próximo passo.','Quem cuida do hábito de hoje constrói a vida de amanhã.','Progresso não precisa ser rápido. Precisa ser contínuo.','Seu eu do futuro agradece o que você fizer agora.','Disciplina é lembrar o que você quer quando a vontade some.','Pequenas vitórias diárias constroem grandes mudanças.','Comece de onde você está, com o que você tem.','Hoje é um bom dia para ficar um pouco melhor que ontem.','Foque no processo. O resultado vem como consequência.','Cada tarefa concluída é um voto na pessoa que você quer ser.'];
+const PHRASE=PH[Math.floor(Math.random()*PH.length)];
+const AREAS=[['visao','Visão geral','#3FA566'],['habitos','Hábitos','#3FA566'],['projetos','Projetos','#4A7FD6'],['financeiro','Financeiro','#D39A1F'],['estudos','Estudos','#8B6BD6'],['saude','Saúde','#E0594A'],['relatorios','Relatórios','#3FA566']];
+const COL=Object.fromEntries(AREAS.map(a=>[a[0],a[2]]));
+const CATS=['Renda','Moradia','Alimentação','Transporte','Lazer','Saúde','Estudos','Outros'];
+
+const seed=()=>{const log=p=>{const o={};days(14).forEach((d,i)=>{if((i*p+3)%5)o[d]=1});delete o[T];return o};
+ const by=a=>Object.fromEntries(days(7).map((d,i)=>[d,a[i]]));
+ return{habits:[{n:'Beber 2 L de água',log:log(2)},{n:'Exercício físico',log:log(3)},{n:'Ler 20 minutos',log:log(4)}],
+ projects:[{n:'Reforma do escritório',p:40,due:dk(-12),pri:'Alta'},{n:'Curso de inglês',p:65,due:dk(-30),pri:'Média'},{n:'Site pessoal',p:15,due:dk(2),pri:'Alta'}],
+ tx:[{d:'Salário',v:4200,c:'Renda',date:dk(20)},{d:'Aluguel',v:-1300,c:'Moradia',date:dk(18)},{d:'Mercado',v:-420,c:'Alimentação',date:dk(9)},{d:'Combustível',v:-180,c:'Transporte',date:dk(6)},{d:'Cinema',v:-60,c:'Lazer',date:dk(3)},{d:'Freelance',v:600,c:'Renda',date:dk(2)}],
+ goalSave:5000,study:{goal:10,subj:[{n:'Inglês',h:6},{n:'Programação',h:9}],days:by([1,2,0,1.5,2,1,0.5])},
+ water:by([6,8,5,7,8,4,3]),sleep:by([7,6.5,8,7,6,7.5,7]),move:by([30,0,45,20,0,60,15])}};
+const blank=()=>({habits:[],projects:[],tx:[],goalSave:5000,study:{goal:10,subj:[],days:{}},water:{},sleep:{},move:{}});
+const S=(()=>{try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r)}catch(e){}return seed()})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+
+// Dados derivados
+const streak=a=>{let n=0,i=a.log[T]?0:1;while(a.log[dk(i)]){n++;i++}return n};
+const best=a=>{let b=0,c=0;for(let i=120;i>=0;i--){if(a.log[dk(i)]){c++;b=Math.max(b,c)}else c=0}return b};
+const hrate=()=>S.habits.length?Math.round(sum(days(7).map(d=>S.habits.filter(a=>a.log[d]).length))/(S.habits.length*7)*100):0;
+const xpDay=d=>Math.round(S.habits.filter(a=>a.log[d]).length*10+(S.water[d]||0)*2+(S.study.days[d]||0)*15+Math.floor((S.move[d]||0)/5));
+const xp=()=>sum(Array.from({length:120},(_,i)=>xpDay(dk(i))))+sum(S.projects.map(p=>p.p*2+(p.p>=100?100:0)));
+const lvl=x=>Math.floor(Math.sqrt(x/40))+1;
+const fin=()=>{const t=S.tx.filter(a=>a.date>=dk(29)),i=sum(t.filter(a=>a.v>0).map(a=>a.v)),o=-sum(t.filter(a=>a.v<0).map(a=>a.v));return{t,i,o,bal:i-o,rate:i?Math.round((i-o)/i*100):0}};
+const proj=()=>{const a=S.projects.filter(p=>p.p<100);return{act:a.length,done:S.projects.length-a.length,late:a.filter(p=>diff(p.due)<0).length,avg:S.projects.length?Math.round(sum(S.projects.map(p=>p.p))/S.projects.length):0}};
+const stu=()=>{const d=days(7).map(k=>S.study.days[k]||0),top=[...S.study.subj].sort((a,b)=>b.h-a.h)[0];return{d,wk:sum(d),n:d.filter(Boolean).length,top:top?top.n:'—'}};
+const hea=()=>{const w=days(7).map(k=>S.water[k]||0),sl=days(7).map(k=>S.sleep[k]||0),mv=days(7).map(k=>S.move[k]||0),ss=sl.filter(Boolean);return{w,sl,mv,water:S.water[T]||0,sleep:ss.length?sum(ss)/ss.length:0,move:sum(mv),act:mv.filter(Boolean).length}};
+
+// Componentes
+const stat=(v,l)=>h('div',{class:'stat'},h('b',{},String(v)),h('span',{},l));
+const stats=(...a)=>h('div',{class:'stats'},...a.map(x=>stat(x[0],x[1])));
+const bar=p=>h('div',{class:'bar',role:'progressbar','aria-valuenow':Math.round(p)},h('i',{style:'--w:'+Math.max(0,Math.min(100,p))+'%'}));
+const card=(t,s,...k)=>h('section',{class:'card'},h('div',{class:'ch'},h('h3',{},t),h('small',{},s||'')),...k);
+const wide=e=>{e.classList.add('wide');return e};
+const head=(t,s)=>h('header',{class:'vh'},h('h1',{},t),h('p',{},s));
+const grid=(...k)=>h('div',{class:'grid'},...k);
+const rm=(l,f)=>h('button',{class:'x','aria-label':l,onclick:f},'×');
+const ghost=(t,l,f)=>h('button',{class:'ghost','aria-label':l,onclick:f},t);
+const empty=t=>h('p',{class:'empty'},t);
+const inp=(n,p,a={})=>h('input',{name:n,placeholder:p,'aria-label':p,required:'',...a});
+const sel=(n,l,o)=>h('select',{name:n,'aria-label':l},...o.map(x=>h('option',{},x)));
+const form=(fn,...k)=>{const f=h('form',{class:'add'},...k,h('button',{class:'btn'},'Adicionar'));f.addEventListener('submit',e=>{e.preventDefault();fn(new FormData(f))});return f};
+const step=(val,fn,l)=>h('div',{class:'stepper'},ghost('−','Diminuir '+l,()=>fn(-1)),h('b',{},val),ghost('+','Aumentar '+l,()=>fn(1)));
+const wd=d=>new Date(d+'T12:00').toLocaleDateString('pt-BR',{weekday:'short'}).slice(0,3);
+const cols=(v,max,f=x=>x,l=days(7))=>h('div',{class:'cols'},...v.map((x,i)=>h('div',{class:'col'},h('small',{},x?String(f(x)):''),h('i',{style:'--k:'+Math.min(1,x/max)}),h('span',{},wd(l[i])))));
+
+// Atualização com ganho de XP
+function upd(fn){const a=xp(),l=lvl(a);fn();save();render();const b=xp();if(b>a)toast('+'+(b-a)+' XP');if(lvl(b)>l)setTimeout(()=>toast('Nível '+lvl(b)+' alcançado!'),500)}
+function toast(t){const d=h('div',{},t);$('#toast').append(d);setTimeout(()=>d.remove(),2500)}
+
+const V={
+visao(){const x=xp(),L=lvl(x),n=S.habits.length,dn=S.habits.filter(a=>a.log[T]).length,f=fin(),p=proj(),s=stu(),k=hea(),base=40*(L-1)**2,top=40*L*L;
+ const hero=h('section',{class:'hero'},h('p',{},'Seu progresso'),h('h2',{},'Nível '+L),
+  h('div',{class:'lbl'},h('span',{},(x-base)+' de '+(top-base)+' XP neste nível'),h('span',{},'faltam '+(top-x)+' XP para o nível '+(L+1))),bar((x-base)/(top-base)*100),
+  h('div',{class:'lbl'},h('span',{},'Hábitos de hoje'),h('span',{},dn+' de '+n)),bar(n?dn/n*100:0));
+ const tile=(id,t,a,b)=>h('a',{class:'tile',href:'#'+id,style:'--c:'+COL[id]},h('small',{},t),h('b',{},a),h('span',{},b));
+ const foc=S.habits.filter(a=>!a.log[T]).map(a=>'Hábito: '+a.n);
+ const np=S.projects.filter(a=>a.p<100).sort((a,b)=>a.due.localeCompare(b.due))[0];
+ if(np)foc.push('Projeto: '+np.n+' ('+dueTxt(np.due)+')');
+ if(k.water<8)foc.push('Beber mais '+(8-k.water)+' copos de água');
+ if(s.wk<S.study.goal)foc.push('Estudar mais '+fmt(S.study.goal-s.wk)+' h para bater a meta da semana');
+ return[head(new Date().getHours()<12?'Bom dia!':new Date().getHours()<18?'Boa tarde!':'Boa noite!',new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})),h('p',{class:'tip'},PHRASE),hero,
+ h('div',{class:'grid tiles'},tile('habitos','Hábitos',dn+'/'+n+' hoje','Maior sequência: '+Math.max(0,...S.habits.map(best))+' dias'),tile('projetos','Projetos',p.avg+'% médio',p.act+' ativos · '+p.late+' atrasados'),tile('financeiro','Financeiro',brl.format(f.bal),'Economia de '+f.rate+'% em 30 dias'),tile('estudos','Estudos',fmt(s.wk)+' h de '+S.study.goal+' h',S.study.subj.length+' matérias'),tile('saude','Saúde',k.water+'/8 copos','Sono médio de '+fmt(k.sleep)+' h')),
+ card('Em foco hoje',foc.length+' pendências',foc.length?h('ul',{},...foc.slice(0,6).map(t=>h('li',{},t))):empty('Tudo em dia. Bom trabalho.'))]},
+
+habitos(){const n=S.habits.length,dn=S.habits.filter(a=>a.log[T]).length,l=days(7);
+ return[head('Hábitos','Consistência vale mais que intensidade. Marque o que você fez hoje.'),
+ stats([dn+'/'+n,'feitos hoje'],[Math.max(0,...S.habits.map(best))+' dias','melhor sequência'],[hrate()+'%','taxa nos últimos 7 dias'],[sum(S.habits.map(a=>Object.keys(a.log).length)),'conclusões no total']),
+ grid(card('Hoje',n&&dn===n?'Dia completo':'',h('ul',{},...S.habits.map((a,i)=>h('li',{},
+   h('button',{class:'tick'+(a.log[T]?' on':''),'aria-pressed':String(!!a.log[T]),'aria-label':a.n,onclick:()=>upd(()=>{if(a.log[T])delete a.log[T];else a.log[T]=1})},a.log[T]?'✓':''),
+   h('span',{class:'grow'+(a.log[T]?' done':'')},a.n),h('span',{class:'chip'},streak(a)+' dias'),
+   h('span',{class:'dots',title:'Últimos 7 dias'},...l.map(d=>h('i',{class:a.log[d]?'on':''}))),
+   rm('Remover '+a.n,()=>upd(()=>S.habits.splice(i,1)))))),n?'':empty('Nenhum hábito ainda.'),
+   form(f=>upd(()=>S.habits.push({n:f.get('n').trim(),log:{}})),inp('n','Novo hábito',{maxlength:40}))),
+  card('Consistência da semana','% de hábitos feitos por dia',cols(l.map(d=>n?S.habits.filter(a=>a.log[d]).length/n*100:0),100,v=>Math.round(v)+'%',l)))]},
+
+projetos(){const p=proj(),lst=S.projects.map((q,i)=>[q,i]).sort((a,b)=>a[0].due.localeCompare(b[0].due));
+ return[head('Projetos','Objetivos grandes ficam leves quando viram etapas.'),
+ stats([p.act,'em andamento'],[p.done,'concluídos'],[p.late,'atrasados'],[p.avg+'%','progresso médio']),
+ card('Seus projetos','Ordenados por prazo',h('ul',{},...lst.map(([q,i])=>{const st=q.p>=100?['Concluído','ok']:diff(q.due)<0?[dueTxt(q.due),'bad']:[dueTxt(q.due),''];const sp=d=>()=>upd(()=>{q.p=Math.max(0,Math.min(100,q.p+d))});
+   return h('li',{},h('span',{class:'grow'},q.n),h('span',{class:'chip'},'Prioridade '+q.pri.toLowerCase()),h('span',{class:'chip '+st[1]},st[0]),h('b',{},q.p+'%'),ghost('−10','Diminuir 10% em '+q.n,sp(-10)),ghost('+10','Aumentar 10% em '+q.n,sp(10)),rm('Remover '+q.n,()=>upd(()=>S.projects.splice(i,1))),bar(q.p))})),
+  S.projects.length?'':empty('Nenhum projeto ainda.'),
+  form(f=>upd(()=>S.projects.push({n:f.get('n').trim(),p:0,due:f.get('due'),pri:f.get('pri')})),inp('n','Novo projeto',{maxlength:50}),inp('due','Prazo',{type:'date'}),sel('pri','Prioridade',['Alta','Média','Baixa'])))]},
+
+financeiro(){const f=fin(),cats={};f.t.filter(a=>a.v<0).forEach(a=>cats[a.c]=(cats[a.c]||0)-a.v);
+ const cl=Object.entries(cats).sort((a,b)=>b[1]-a[1]),all=S.tx.map((t,i)=>[t,i]).sort((a,b)=>b[0].date.localeCompare(a[0].date)).slice(0,8),g=S.goalSave,sv=Math.max(0,f.bal);
+ return[head('Financeiro','Últimos 30 dias de receitas e despesas.'),
+ stats([brl.format(f.bal),'saldo'],[brl.format(f.i),'receitas'],[brl.format(f.o),'despesas'],[f.rate+'%','da renda que sobrou']),
+ grid(card('Meta de reserva','Meta: '+brl.format(g),bar(sv/g*100),h('p',{class:'muted'},brl.format(sv)+' guardados. Faltam '+brl.format(Math.max(0,g-sv))+'.'),step(brl.format(g),d=>upd(()=>{S.goalSave=Math.max(500,g+d*500)}),'meta')),
+  card('Para onde foi o dinheiro','Despesas por categoria',...(cl.length?cl.map(([c,v])=>h('div',{class:'cat'},h('div',{class:'row'},h('span',{},c),h('b',{},brl.format(v)+' · '+Math.round(v/f.o*100)+'%')),bar(v/f.o*100))):[empty('Sem despesas no período.')])),
+  wide(card('Lançamentos','Mais recentes primeiro',
+   form(x=>upd(()=>{const c=x.get('c'),v=Math.abs(parseFloat(x.get('v')));S.tx.push({d:x.get('d').trim(),v:c=='Renda'?v:-v,c,date:T})}),inp('d','Descrição',{maxlength:40}),inp('v','Valor em R$',{type:'number',min:'0.01',step:'0.01'}),sel('c','Categoria',CATS)),
+   h('ul',{},...all.map(([t,i])=>h('li',{},h('small',{class:'muted'},t.date.slice(8)+'/'+t.date.slice(5,7)),h('span',{class:'grow'},t.d),h('span',{class:'chip'},t.c),h('b',{class:t.v>0?'in':'out'},brl.format(t.v)),rm('Remover '+t.d,()=>upd(()=>S.tx.splice(i,1))))))
+   ,all.length?'':empty('Sem lançamentos ainda.'))))]},
+
+estudos(){const s=stu(),g=S.study.goal,l=days(7),mx=Math.max(1,...S.study.subj.map(a=>a.h));
+ return[head('Estudos','Pouco todo dia vence muito de vez em quando.'),
+ stats([fmt(s.wk)+' h','estudadas na semana'],[g+' h','meta semanal'],[s.n+'/7','dias com estudo'],[s.top,'matéria em destaque']),
+ grid(card('Horas por dia','Últimos 7 dias',cols(s.d,Math.max(2,...s.d),fmt,l)),
+  card('Meta semanal',Math.round(s.wk/g*100)+'% concluído',bar(s.wk/g*100),h('p',{class:'muted'},s.wk>=g?'Meta batida. Que tal subir um pouco?':'Faltam '+fmt(g-s.wk)+' h para fechar a semana.'),step(g+' h',d=>upd(()=>{S.study.goal=Math.max(1,g+d)}),'meta')),
+  wide(card('Matérias','Horas acumuladas',h('ul',{},...S.study.subj.map((q,i)=>h('li',{},h('span',{class:'grow'},q.n),h('b',{},fmt(q.h)+' h'),ghost('+1 h','Registrar 1 hora em '+q.n,()=>upd(()=>{q.h+=1;S.study.days[T]=(S.study.days[T]||0)+1})),rm('Remover '+q.n,()=>upd(()=>S.study.subj.splice(i,1))),bar(q.h/mx*100)))),
+   S.study.subj.length?'':empty('Nenhuma matéria ainda.'),form(f=>upd(()=>S.study.subj.push({n:f.get('n').trim(),h:0})),inp('n','Nova matéria',{maxlength:30})))))]},
+
+saude(){const k=hea(),l=days(7),w=k.water,tip=k.sleep&&k.sleep<7?'Seu sono médio está abaixo de 7 h. Tente dormir 30 minutos mais cedo.':w<8?'Faltam '+(8-w)+' copos para a meta de água de hoje.':'Água em dia hoje. Mantenha o ritmo.';
+ return[head('Saúde','Corpo em dia sustenta todo o resto.'),
+ stats([w+'/8','copos hoje'],[fmt(k.sleep)+' h','sono médio'],[k.move+' min','exercício na semana'],[k.act+'/7','dias ativos']),
+ h('p',{class:'tip'},tip),
+ grid(card('Água de hoje',w+' de 8 copos',h('div',{class:'glasses'},...Array.from({length:8},(_,i)=>h('button',{class:'glass'+(i<w?' on':''),'aria-label':'Marcar '+(i+1)+' copos','aria-pressed':String(i<w),onclick:()=>upd(()=>{S.water[T]=w===i+1?i:i+1})}))),h('p',{class:'muted'},'Cada copo vale 2 XP.')),
+  card('Sono','Horas por noite',cols(k.sl,10,fmt,l),step(fmt(S.sleep[T]||0)+' h',d=>upd(()=>{S.sleep[T]=Math.max(0,Math.min(14,(S.sleep[T]||0)+d*.5))}),'sono de hoje')),
+  wide(card('Exercício','Minutos por dia',cols(k.mv,90,x=>x,l),step((S.move[T]||0)+' min',d=>upd(()=>{S.move[T]=Math.max(0,(S.move[T]||0)+d*15)}),'exercício de hoje'))))]},
+
+relatorios(){const l=days(7),xd=l.map(xpDay),f=fin(),p=proj(),s=stu(),k=hea(),x=xp();
+ const sc=[['Hábitos',hrate(),COL.habitos],['Projetos',p.avg,COL.projetos],['Reserva',Math.max(0,f.bal)/S.goalSave*100,COL.financeiro],['Estudos',s.wk/S.study.goal*100,COL.estudos],['Saúde',(Math.min(1,sum(k.w)/56)+Math.min(1,k.sleep/8)+Math.min(1,k.move/150))/3*100,COL.saude]].map(a=>[a[0],Math.round(Math.min(100,a[1])),a[2]]);
+ const hi=[...sc].sort((a,b)=>b[1]-a[1]);
+ return[head('Relatórios','Sua evolução da semana em números.'),
+ stats([x,'XP acumulado'],['Nível '+lvl(x),'seu nível atual'],[sum(xd)+' XP','ganhos em 7 dias'],[Math.max(0,...xd)+' XP','melhor dia']),
+ grid(card('XP por dia','Últimos 7 dias',cols(xd,Math.max(10,...xd),v=>v,l)),
+  card('Equilíbrio entre áreas','Pontuação de 0 a 100',...sc.map(a=>h('div',{class:'cat',style:'--c:'+a[2]},h('div',{class:'row'},h('span',{},a[0]),h('b',{},a[1]+'%')),bar(a[1]))),h('p',{class:'tip'},'Ponto forte: '+hi[0][0]+'. Próximo foco: '+hi[4][0]+'.'))),
+ card('Seus dados','Ficam salvos neste navegador',h('div',{class:'add'},ghost('Limpar dados de exemplo','Limpar todos os dados',()=>{if(confirm('Apagar todos os dados?'))upd(()=>Object.assign(S,blank()))}),ghost('Restaurar exemplo','Restaurar dados de exemplo',()=>upd(()=>Object.assign(S,seed())))))]}
+};
+
+// Menu
+$('#nav').append(...AREAS.map(a=>h('a',{href:'#'+a[0],style:'--d:'+a[2]},a[1])));
+
+let shown=0;
+function count(to){const a=shown,t0=performance.now();shown=to;const st=t=>{const k=Math.min(1,(t-t0)/700);$('#xpn').textContent=Math.round(a+(to-a)*k);if(k<1)requestAnimationFrame(st)};requestAnimationFrame(st)}
+function side(){const x=xp(),L=lvl(x);$('#lv').textContent='Nível '+L;$('#xpb').style.width=(x-40*(L-1)**2)/(40*(2*L-1))*100+'%';if(x!==shown)count(x)}
+
+// Rotas
+let cur='visao';
+function render(){const m=$('#view'),n=V[cur]();n.forEach((e,i)=>e.style.setProperty('--i',i));m.style.setProperty('--c',COL[cur]);m.replaceChildren(...n);
+ document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('active',a.hash==='#'+cur));side()}
+function go(id,push){cur=Object.hasOwn(V,id)?id:'visao';const m=$('#view');m.classList.add('enter');clearTimeout(go.t);go.t=setTimeout(()=>m.classList.remove('enter'),1500);render();scrollTo(0,0);document.title='LIFE OS · '+AREAS.find(a=>a[0]===cur)[1];if(push){try{history.replaceState(null,'','#'+cur)}catch(e){}}}
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;e.preventDefault();go(a.getAttribute('href').slice(1),true)});
+addEventListener('hashchange',()=>go(location.hash.slice(1)));
+go(location.hash.slice(1));
+$('#phrase').textContent=PHRASE;
+const close=()=>$('#splash').classList.add('off');
+$('#go').addEventListener('click',close);addEventListener('keydown',e=>{if(e.key==='Escape')close()});setTimeout(close,7000);$('#go').focus();
+</script>
+</body>
+</html>
+
+
+
+
